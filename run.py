@@ -5,8 +5,38 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-def menu():
-    print("Choose your opponent")
+def menu(player):
+    print("Choose your next opponent")
+
+
+def swordBattle(player, enemy):
+    clear_screen()
+    while True:
+        print(f"\t\t⚔⚔⚔Battle⚔⚔⚔")
+        attack = (player.skillPoints + dice(6)) - (enemy.skillPoints + dice(6))
+
+        if attack == 0:
+            print(f"The swords clash and no damage is dealt to either opponent")
+        if attack > 0:
+            damage = attack + player.strengthPoints - player.armor
+            print(f"{player.name} strikes {enemy.name} who looses {damage} HEALTH")
+            enemy.healthPoints -= damage
+            if enemy.healthPoints < 1:
+                print(
+                    f"{enemy.name.upper()} recieves a deadly blow. \n{player.name.upper()} lifts sword in triumph"
+                )
+                menu(player)
+        if attack < 0:
+            damage = abs(attack) + enemy.strengthPoints - player.armor
+            print(
+                f"{player.name.upper()} strikes {enemy.name.upper()} who looses {damage} HEALTH"
+            )
+            enemy.healthPoints -= damage
+            if player.healthPoints < 1:
+                print(
+                    f"{enemy.name.upper()} recieves a deadly blow. \n{player.name.upper()} lifts sword in triumph"
+                )
+                menu(player)
 
 
 class CharacterStats:
@@ -94,6 +124,18 @@ def addStatsPoints(player, statsPoints):
         print(
             f"What stats would you like to improve?\n1. STRENGTH:\t{getattr(player, 'strengthPoints')}\n2. HEALTH:\t{getattr(player, 'healthPoints')}\n3. SWORD SKILL:\t{getattr(player, 'skillPoints')}\n4. ARMOR:\t{getattr(player, 'armor')}\n"
         )
+        if statsPoints < 1:
+            type = "orc"
+            name = "orgul"
+            strengthPoints = 40
+            healthPoints = 26
+            skillPoints = 25
+            armor = 2
+            enemy = CharacterStats(
+                type, name, strengthPoints, healthPoints, skillPoints, armor
+            )
+            swordBattle(player, enemy)
+            menu(player)
         selectAttribute = input(f"Choose attribute 1/2/3/4: ")
         if selectAttribute == "1":
             activateStatPoints = int(input(f"How many points do you wish to add"))
@@ -127,8 +169,7 @@ def addStatsPoints(player, statsPoints):
             else:
                 print(f"Not enough points left\nYou have {statsPoints} left")
                 addStatsPoints(player, statsPoints)
-        if statsPoints == 0:
-            menu(player)
+
         print(player)
 
 
