@@ -1,6 +1,6 @@
-import random, pprint, os, time, gspread
+import random, pprint, os, time, gspread, csv
 from google.oauth2.service_account import Credentials
-
+import pandas as pd
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -8,12 +8,19 @@ SCOPE = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-CREDS = Credentials.from_service_account_file("creds.json")
+CREDS = Credentials.from_service_account_file("cred.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-SHEET = GSPREAD_CLIENT.open("enemy")
+SHEET = GSPREAD_CLIENT.open("enemy").sheet1
 
-enemy = SHEET)
+df = pd.read_csv(SHEET)
+
+# Delete the last row using slicing
+df = df[:-1]
+
+# Save the modified DataFrame to the CSV file
+df.to_csv("SHEET", index=False)
+
 
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
@@ -23,23 +30,29 @@ def menu(player):
     print("Choose your next opponent")
 
 
-def swordBattle(player, enemy):
+def swordBattle(player, enemy, healthPoints):
     clear_screen()
     while True:
-        print(f"\t\t⚔⚔⚔Battle⚔⚔⚔")
-        attack = (player.skillPoints + dice(6)) - (enemy.skillPoints + dice(6))
-
+        clear_screen
+        print(f"\t\t⚔⚔⚔---Battle---⚔⚔⚔")
+        attack = (player.skillPoints + dice(3)) - (enemy.skillPoints + dice(3))
+        time.sleep(1)
         if attack == 0:
             print(f"The swords clash and no damage is dealt to either opponent")
         if attack > 0:
             damage = attack + player.strengthPoints - player.armor
             print(f"{player.name} strikes {enemy.name} who looses {damage} HEALTH")
             enemy.healthPoints -= damage
+
             if enemy.healthPoints < 1:
                 print(
-                    f"{enemy.name.upper()} recieves a deadly blow. \n{player.name.upper()} lifts sword in triumph"
+                    f"{enemy.name.upper()} recieves a deadly blow. \n{player.name.upper()} lifts the sword in triumph"
                 )
-                menu(player)
+                dead = SHEET.row_values(2)
+                dead[3] = 0
+                SHEET.append_row(dead)
+
+                break
         if attack < 0:
             damage = abs(attack) + enemy.strengthPoints - player.armor
             print(
@@ -139,16 +152,17 @@ def addStatsPoints(player, statsPoints):
             f"What stats would you like to improve?\n1. STRENGTH:\t{getattr(player, 'strengthPoints')}\n2. HEALTH:\t{getattr(player, 'healthPoints')}\n3. SWORD SKILL:\t{getattr(player, 'skillPoints')}\n4. ARMOR:\t{getattr(player, 'armor')}\n"
         )
         if statsPoints < 1:
-            type = "orc"
-            name = "orgul"
-            strengthPoints = 40
-            healthPoints = 26
-            skillPoints = 25
-            armor = 2
+            enemyVals = SHEET.row_values(2)
+            type = enemyVals[0]
+            name = enemyVals[1]
+            strengthPoints = int(enemyVals[2])
+            healthPoints = int(enemyVals[3])
+            skillPoints = int(enemyVals[4])
+            armor = int(enemyVals[5])
             enemy = CharacterStats(
                 type, name, strengthPoints, healthPoints, skillPoints, armor
             )
-            swordBattle(player, enemy)
+            swordBattle(player, enemy, enemyVals[3])
             menu(player)
         selectAttribute = input(f"Choose attribute 1/2/3/4: ")
         if selectAttribute == "1":
