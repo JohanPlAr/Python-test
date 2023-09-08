@@ -13,7 +13,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("enemy").sheet1
 # RESETSHEET = GSPREAD_CLIENT.open("reset").sheet1
-openai.api_key_path = "cred.txt"
+openai.api_key_path = "key.txt"
 
 
 def clear_screen():
