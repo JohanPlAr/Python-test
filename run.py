@@ -22,12 +22,12 @@ def clear_screen():
 
 def leave():
     leave = input(f"\nMenu press Enter: ")
-    clear_screen
+    clear_screen()
 
 
 def readEnemyCSV():
     enemyLst = []
-    with open("enemy.csv", newline="") as enemyFile:
+    with open("Python-test\enemy.csv", newline="") as enemyFile:
         reader = csv.reader(enemyFile, delimiter=",", quotechar='"')
         for row in reader:
             enemyLst.append(row)
@@ -36,21 +36,21 @@ def readEnemyCSV():
 
 def resetEnemyCSV(enemy):
     enemyLst = []
-    with open("enemy.csv", "w", newline="") as enemyFile:
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows([])
-    with open("enemy_reset.csv", newline="") as resetFile:
+    with open("Python-test\enemy_reset.csv", newline="") as resetFile:
         reader = csv.reader(resetFile, delimiter=",", quotechar='"')
         for row in reader:
             enemyLst.append(row)
     print(enemy)
-    with open("enemy.csv", "w", newline="") as enemyFile:
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows(enemyLst)
 
 
 def updateEnemyCsv(enemyLst):
-    with open("enemy.csv", "w", newline="") as enemyFile:
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows([])
     with open("enemy.csv", "w", newline="") as enemyFile:
@@ -64,7 +64,7 @@ def download():
     for row in enemyLst:
         csvLst.append(row)
     if len(csvLst) < 21:
-        with open("enemy.csv", "w", newline="") as enemyFile:
+        with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
             writer = csv.writer(enemyFile)
             writer.writerows(csvLst)
     else:
@@ -137,7 +137,7 @@ def opponentsLst(player):
         print(f"{first: <10}\t\t{second: <10}")
 
     if player != "Hero has not been created":
-        opponent = input("Please select an opponent or 'M'for back to menu: ")
+        opponent = input("Please select an opponent or 'M' for back to menu: ")
     else:
         print("No Hero Created. Please Go To Menu")
         menu(player)
@@ -178,7 +178,7 @@ def swordBattle(player, enemy, healthPoints, num):
                     f"{enemy.name.upper()} recieves a final blow. \n{player.name.upper()} lifts the sword in triumph"
                 )
                 battlteOver = input(
-                    "The fight is over {enemy.name.upper()} is defeated. Press enter to continue the quest: "
+                    f"The fight is over {enemy.name.upper()} is defeated. Press enter to continue the quest: "
                 )
                 time.sleep(1)
                 enemyLst = readEnemyCSV()
@@ -203,7 +203,7 @@ def swordBattle(player, enemy, healthPoints, num):
                 battlteOver = input("The fight is over. Press enter: ")
                 clear_screen()
                 print(
-                    f"\n\n\t\t⚔⚔⚔---GAME OVER---⚔⚔⚔\n\n \n\n\t\t‌☩‌☩‌☩{player.name.upper()}‌☩‌☩‌☩"
+                    f"\n\n\t\t⚔⚔⚔---GAME OVER---⚔⚔⚔\n\n \n\n\t\t\t☩‌☩‌☩---{player.name.upper()}‌---☩‌☩‌☩"
                 )
                 leave()
                 main()
@@ -294,6 +294,8 @@ def characterInput():
 
 def addStatsPoints(player, statsPoints):
     while True:
+        if statsPoints < 1:
+            menu(player)
         time.sleep(2)
         clear_screen()
         print(f"You have {statsPoints} points to add to your stats")
@@ -302,9 +304,6 @@ def addStatsPoints(player, statsPoints):
         )
         if statsPoints > 0:
             selectAttribute = input(f"Choose attribute: ")
-
-        if statsPoints < 1:
-            menu(player)
 
         if selectAttribute == "1":
             activateStatPoints = int(input(f"How many points do you wish to add: "))
@@ -340,7 +339,7 @@ def addStatsPoints(player, statsPoints):
                 addStatsPoints(player, statsPoints)
         else:
             print(f"Choices available are 1,2,3,4\nYou entered {selectAttribute}")
-        print(player)
+        leave()
 
 
 def getEnemy(num):
@@ -357,6 +356,7 @@ def getEnemy(num):
 
 
 def story(player, enemy):
+    clear_screen()
     messages = [
         {"role": "system", "content": "You are a Storyteller"},
     ]
@@ -368,7 +368,7 @@ def story(player, enemy):
         chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
 
     reply = chat.choices[0].message.content
-    print(f"A Lord of the Strings tale: {reply}")
+    print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔\n\n{reply}")
     messages.append({"role": "assistant", "content": reply})
     startBattle = input(f"\nPress Enter to start the battle")
 
