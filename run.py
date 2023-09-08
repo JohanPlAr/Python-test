@@ -11,40 +11,76 @@ SCOPE = [
 CREDS = Credentials.from_service_account_file("cred.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-# SHEET = GSPREAD_CLIENT.open("enemy").sheet1
+SHEET = GSPREAD_CLIENT.open("enemy").sheet1
 # RESETSHEET = GSPREAD_CLIENT.open("reset").sheet1
 openai.api_key_path = "cred.txt"
-
-fOne = r"Python-test\enemy.csv"
-fTwo = r"Python-test\reset.csv"
-SHEET = pd.read_csv(fOne)
-RESETSHEET = pd.read_csv(fTwo)
 
 
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
-    # def reset():
-    for i in range(1, SHEET.row_count):
-        SHEET.delete_rows(SHEET.row_count)
-    for i in range(2, RESETSHEET.row_count + 1):
-        SHEET.append_row(RESETSHEET.row_values(i))
+
+def leave():
+    leave = input(f"\nMenu press Enter: ")
+    clear_screen
 
 
-def reset():
-    for i in range(1, len(SHEET)):
-        SHEET.delete_rows(len(SHEET))
-    for i in range(2, len(RESETSHEET + 1)):
-        SHEET.append_row(RESETSHEET.row_values(i))
+def readEnemyCSV():
+    enemyLst = []
+    with open("Python-test\enemy.csv", newline="") as enemyFile:
+        reader = csv.reader(enemyFile, delimiter=",", quotechar='"')
+        for row in reader:
+            enemyLst.append(row)
+    return enemyLst
+
+
+def resetEnemyCSV(enemy):
+    enemyLst = []
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+        writer = csv.writer(enemyFile)
+        writer.writerows([])
+    with open("Python-test\enemy_reset.csv", newline="") as resetFile:
+        reader = csv.reader(resetFile, delimiter=",", quotechar='"')
+        for row in reader:
+            enemyLst.append(row)
+    print(enemy)
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+        writer = csv.writer(enemyFile)
+        writer.writerows(enemyLst)
+
+
+def updateEnemyCsv(enemyLst):
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+        writer = csv.writer(enemyFile)
+        writer.writerows([])
+    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+        writer = csv.writer(enemyFile)
+        writer.writerows(enemyLst)
+
+
+def download():
+    csvLst = SHEET.get_all_values()
+    enemyLst = readEnemyCSV()[1:]
+    for row in enemyLst:
+        csvLst.append(row)
+    if len(csvLst) < 21:
+        with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+            writer = csv.writer(enemyFile)
+            writer.writerows(csvLst)
+    else:
+        print("list of opponents already updated")
+        leave()
 
 
 def menu(player):
     menu = {}
-    menu["1."] = "Create your Hero"
+    menu["1."] = "Create New Hero"
     menu["2."] = "View Stats"
     menu["3."] = "Choose Opponent"
     menu["4."] = "View Wins"
-    menu["5."] = "Quit"
+    menu["5."] = "Download New Opponents"
+    menu["6."] = "Reset Opponents To Start Settings"
+    menu["7."] = "Quit Game"
 
     while True:
         print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔\nGAME MENU:")
@@ -56,71 +92,105 @@ def menu(player):
         if selection == "1":
             characterInput()
         elif selection == "2":
+            clear_screen()
+            print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
             print(player)
+            leave()
         elif selection == "3":
-            enemy, healthPoints, num = getEnemy(opponentsLst())
+            clear_screen()
+            print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
+            enemy, healthPoints, num = getEnemy(opponentsLst(player))
             story(player, enemy)
             swordBattle(player, enemy, healthPoints, num)
         elif selection == "4":
+            clear_screen()
+            print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
+            print("")
             winsLst()
         elif selection == "5":
+            download()
+            print("New Opponents Successfully Downloaded")
+
+        elif selection == "6":
+            resetEnemyCSV()
+            print
+        elif selection == "7":
             print("Goodbye!")
             break
         else:
             print("Invalid option selected. Please try again.")
 
 
-def opponentsLst():
-    csvLst = SHEET.get_all_values()
+def opponentsLst(player):
+    enemyLst = readEnemyCSV()
+    twoColLst = []
     x = 0
-    for row in csvLst:
+    columns = 2
+    for row in enemyLst:
         if x != 0 and row[3] != "0":
-            print(f"{x}. {row[1]}")
+            twoColLst.append(f"{x}. {row[1].upper()}")
             x += 1
         else:
             x += 1
-    opponent = input("Please select an option: ")
-    return int(opponent) + 1
+
+    for first, second in zip(twoColLst[::columns], twoColLst[1::columns]):
+        print(f"{first: <10}\t\t{second: <10}")
+
+    if player != "Hero has not been created":
+        opponent = input("Please select an opponent or 'M'for back to menu: ")
+    else:
+        print("No Hero Created. Please Go To Menu")
+        menu(player)
+
+    return int(opponent)
 
 
 def winsLst():
-    csvLst = SHEET.get_all_values()
+    # csvLst = SHEET.get_all_values()
+    enemyLst = readEnemyCSV()
     x = 1
-    for row in csvLst:
+    for row in enemyLst:
         if row[3] == "0":
             print(f"{x}. {row[1]}")
             x += 1
         else:
             x = 1
-    leave = input("Press Enter to return to menu:\n")
+    leave()
 
 
 def swordBattle(player, enemy, healthPoints, num):
     clear_screen()
     print(f"\t\t⚔⚔⚔---Battle---⚔⚔⚔")
     while True:
-        attack = (player.skillPoints + dice(3)) - (enemy.skillPoints + dice(3))
+        attack = (player.skillPoints + dice(6)) - (enemy.skillPoints + dice(6))
         time.sleep(1)
         if attack == 0:
             print(f"The swords clash and no damage is dealt to either opponent")
+            time.sleep(1)
         if attack > 0:
-            damage = attack + player.strengthPoints - player.armor
+            damage = dice(1) + player.strengthPoints - player.armor
             print(f"{player.name} strikes {enemy.name} who looses {damage} HP")
             enemy.healthPoints -= damage
             print(f"{enemy.name} now has {enemy.healthPoints} HP left")
+            time.sleep(1)
             if enemy.healthPoints < 1:
                 print(
-                    f"{enemy.name.upper()} recieves a deadly blow. \n{player.name.upper()} lifts the sword in triumph"
+                    f"{enemy.name.upper()} recieves a final blow. \n{player.name.upper()} lifts the sword in triumph"
                 )
-
-                dead = SHEET.row_values(num)
+                battlteOver = input(
+                    "The fight is over {enemy.name.upper()} is defeated. Press enter to continue the quest: "
+                )
+                time.sleep(1)
+                enemyLst = readEnemyCSV()
+                dead = enemyLst[num]
                 dead[3] = 0
-                SHEET.delete_rows(num)
-                SHEET.append_row(dead)
+                enemyLst.pop(num)
+                enemyLst.append(dead)
+                updateEnemyCsv(enemyLst)
 
                 break
         if attack < 0:
-            damage = abs(attack) + enemy.strengthPoints - player.armor
+            damage = dice(1) + enemy.strengthPoints - player.armor
             print(
                 f"{enemy.name.upper()} strikes {player.name.upper()} who looses {damage} HP"
             )
@@ -128,14 +198,16 @@ def swordBattle(player, enemy, healthPoints, num):
             print(f"{player.name} now has {player.healthPoints} HP left")
             if player.healthPoints < 1:
                 print(
-                    f"{player.name.upper()} recieves a deadly blow. \n{enemy.name.upper()} lifts sword in triumph\n\n\t\tGAME OVER for {player.name.upper()}"
+                    f"{player.name.upper()} recieves a final blow. \n{enemy.name.upper()} lifts sword in triumph"
                 )
-                time.sleep(4)
+                battlteOver = input("The fight is over. Press enter: ")
                 clear_screen()
-                gameOver = input(
-                    f"\n\n\t\t⚔⚔⚔---GAME OVER---⚔⚔⚔\n\nPress ENTER to reach menu:"
+                print(
+                    f"\n\n\t\t⚔⚔⚔---GAME OVER---⚔⚔⚔\n\n \n\n\t\t‌☩‌☩‌☩{player.name.upper()}‌☩‌☩‌☩"
                 )
-                menu(player)
+                leave()
+                main()
+                break
 
 
 class CharacterStats:
@@ -165,15 +237,15 @@ def dice(num):
 
 
 def characterInput():
-    name = input("Choose your characters name: \n")
+    clear_screen()
+    print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔\n")
+    print(f"HERO")
+    name = input("NAME: ")
+    time.sleep(1)
+    typeChoice = input("1. Human\n2. Elf\n3. Dwarf\n4. Orc\n\nTYPE: ").lower()
     time.sleep(1)
     clear_screen()
-    typeChoice = input(
-        "Choose your characters type: \n1. Human\n2. Elf\n3. Dwarf\n4. Orc\n"
-    ).lower()
-    time.sleep(1)
-    clear_screen()
-    if typeChoice == "1" or "human":
+    if typeChoice == "1" or typeChoice == "human":
         type = "human"
         strengthPoints = 5 + dice(3)
         healthPoints = 5 + dice(3)
@@ -183,7 +255,7 @@ def characterInput():
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
-    if typeChoice == "2" or "elf":
+    elif typeChoice == "2" or typeChoice == "elf":
         type = "elf"
         strengthPoints = 0 + dice(3)
         healthPoints = 0 + dice(3)
@@ -193,7 +265,7 @@ def characterInput():
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
-    if typeChoice == "3" or "dwarf":
+    elif typeChoice == "3" or typeChoice == "dwarf":
         type = "dwarf"
         strengthPoints = 10 + dice(3)
         healthPoints = 0 + dice(3)
@@ -203,7 +275,7 @@ def characterInput():
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
-    if typeChoice == "4" or "Orc":
+    elif typeChoice == "4" or typeChoice == "orc":
         type = "orc"
         strengthPoints = 10 + dice(3)
         healthPoints = 0 + dice(3)
@@ -216,7 +288,6 @@ def characterInput():
     else:
         print(f"Choices available are Human/Elf/Dwarf/Orc\nYou entered {name}")
 
-    print(player)
     addStatsPoints(player, statsPoints)
     return player
 
@@ -236,7 +307,7 @@ def addStatsPoints(player, statsPoints):
             menu(player)
 
         if selectAttribute == "1":
-            activateStatPoints = int(input(f"How many points do you wish to add"))
+            activateStatPoints = int(input(f"How many points do you wish to add: "))
             if activateStatPoints <= statsPoints:
                 player.strengthPoints += activateStatPoints
                 statsPoints -= activateStatPoints
@@ -273,7 +344,8 @@ def addStatsPoints(player, statsPoints):
 
 
 def getEnemy(num):
-    enemyVals = SHEET.row_values(num)
+    # enemyVals = SHEET.row_values(num)
+    enemyVals = readEnemyCSV()[num]
     type = enemyVals[0]
     name = enemyVals[1]
     strengthPoints = int(enemyVals[2])
@@ -288,7 +360,7 @@ def story(player, enemy):
     messages = [
         {"role": "system", "content": "You are a Storyteller"},
     ]
-    message = f" {player.name} the {player.type} and {enemy.name} the {enemy.type} draws swords against eachother. A fight of life and death is about to start. Maximum length 60 words"
+    message = f"Set up with dialouge that leads to {player.name} the {player.type} and {enemy.name} the {enemy.type} drawing their weapons and comincing a swordbattle. Maximum length 70 words"
     if message:
         messages.append(
             {"role": "user", "content": message},
@@ -302,15 +374,18 @@ def story(player, enemy):
 
 
 def main():
-    reset()
+    resetEnemyCSV(readEnemyCSV())
+    # reset()
     clear_screen()
     print(
         "\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔\nA RPG-adventure game powered by the story-telling of chat-gpt\n\t\t      Now enter the realm"
     )
+    enter = input(f"\n\n\nPress ENTER to go to Menu: ")
+    clear_screen()
     player = "Hero has not been created"
-
     time.sleep(1)
-    main()
+
+    menu(player)
 
 
 main()
