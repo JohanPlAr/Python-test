@@ -27,7 +27,7 @@ def leave():
 
 def readEnemyCSV():
     enemyLst = []
-    with open("Python-test\enemy.csv", newline="") as enemyFile:
+    with open("enemy.csv", newline="") as enemyFile:
         reader = csv.reader(enemyFile, delimiter=",", quotechar='"')
         for row in reader:
             enemyLst.append(row)
@@ -36,24 +36,24 @@ def readEnemyCSV():
 
 def resetEnemyCSV(enemy):
     enemyLst = []
-    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+    with open("enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows([])
-    with open("Python-test\enemy_reset.csv", newline="") as resetFile:
+    with open("enemy_reset.csv", newline="") as resetFile:
         reader = csv.reader(resetFile, delimiter=",", quotechar='"')
         for row in reader:
             enemyLst.append(row)
     print(enemy)
-    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+    with open("enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows(enemyLst)
 
 
 def updateEnemyCsv(enemyLst):
-    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+    with open("enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows([])
-    with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+    with open("enemy.csv", "w", newline="") as enemyFile:
         writer = csv.writer(enemyFile)
         writer.writerows(enemyLst)
 
@@ -64,7 +64,7 @@ def download():
     for row in enemyLst:
         csvLst.append(row)
     if len(csvLst) < 21:
-        with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
+        with open("enemy.csv", "w", newline="") as enemyFile:
             writer = csv.writer(enemyFile)
             writer.writerows(csvLst)
     else:
