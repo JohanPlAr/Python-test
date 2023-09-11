@@ -1,6 +1,6 @@
 import random, pprint, os, time, gspread, csv, openai
 from google.oauth2.service_account import Credentials
-import pandas as pd
+from dotenv import load_dotenv
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -13,9 +13,11 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open("enemy").sheet1
 RESETSHEET = GSPREAD_CLIENT.open("reset").sheet1
-openai.api_key_path = "key.txt"
 
-enemyLst = SHEET.get_all_values()[1:]
+
+def configure():
+    load_dotenv()
+    openai.api_key = os.getenv("API_KEY")
 
 
 def clear_screen():
@@ -117,7 +119,7 @@ def menu(player, enemyLst):
             player, enemyLst, num = opponentsLst(player, enemyLst)
             enemy, healthPoints, num = getEnemy(enemyLst, num)
             story(player, enemy)
-            swordBattle(player, enemy, healthPoints, num)
+            swordBattle(player, enemyLst, enemy, healthPoints, num)
         elif selection == "4":
             clear_screen()
             print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
@@ -187,7 +189,7 @@ def winsLst(enemyLst):
     leave()
 
 
-def swordBattle(player, enemy, healthPoints, num):
+def swordBattle(player, enemyLst, enemy, healthPoints, num):
     clear_screen()
     print(f"\t\t⚔⚔⚔---Battle---⚔⚔⚔")
     while True:
@@ -217,8 +219,6 @@ def swordBattle(player, enemy, healthPoints, num):
                 enemyLst.append(dead)
                 menu(player, enemyLst)
                 # updateEnemyCsv(enemyLst)
-
-                break
         if attack < 0:
             damage = dice(1) + enemy.strengthPoints - player.armor
             print(
@@ -407,6 +407,10 @@ def story(player, enemy):
 def main():
     # resetEnemyCSV(readEnemyCSV())
     # reset()
+    configure()
+    print(openai)
+    pause = input("PAUSE")
+    enemyLst = SHEET.get_all_values()[1:]
     clear_screen()
     print(
         "\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔\nA RPG-adventure game powered by the story-telling of chat-gpt\n\t\t      Now enter the realm"
