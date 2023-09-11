@@ -161,8 +161,6 @@ def opponentsLst(player, enemyLst):
                 x += 1
                 if int(opponent) == x:
                     num = int(opponent) - 1
-                    print(player, num)
-                    pause = input("pause")
                     return player, enemyLst, num
 
                     break
@@ -408,8 +406,6 @@ def main():
     # resetEnemyCSV(readEnemyCSV())
     # reset()
     configure()
-    print(openai)
-    pause = input("PAUSE")
     enemyLst = SHEET.get_all_values()[1:]
     clear_screen()
     print(
