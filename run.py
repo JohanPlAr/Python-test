@@ -323,6 +323,7 @@ def characterInput(enemyLst):
 def addStatsPoints(player, statsPoints, enemyLst):
     while True:
         if statsPoints < 1:
+            leave()
             menu(player, enemyLst)
         time.sleep(2)
         clear_screen()
@@ -367,7 +368,6 @@ def addStatsPoints(player, statsPoints, enemyLst):
                 addStatsPoints(player, statsPoints)
         else:
             print(f"Choices available are 1,2,3,4\nYou entered {selectAttribute}")
-        leave()
 
 
 def getEnemy(enemyLst, num):
