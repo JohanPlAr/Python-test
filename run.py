@@ -17,7 +17,7 @@ RESETSHEET = GSPREAD_CLIENT.open("reset").sheet1
 
 def configure():
     load_dotenv()
-    openai.api_key = os.getenv("API_KEY")
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 def clear_screen():
