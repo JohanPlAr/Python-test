@@ -40,57 +40,20 @@ def readEnemyCSV():
 
 def download(enemyLst):
     addEnemyLst = MOREENEMIES.get_all_values()[1:]
+
+    x = 0
+    for row in addEnemyLst:
+        x += 1
+        if row[1] in [sublist[1] for sublist in enemyLst]:
+            addEnemyLst.pop(x - 1)
+    print(addEnemyLst)
+    pause = input("pause")
     for row in enemyLst:
         addEnemyLst.append(row)
+
     enemyLst = addEnemyLst
+    print(enemyLst)
     return enemyLst
-
-
-# def readEnemyCSV():
-#     enemyLst = []
-#     with open("Python-test\enemy.csv", newline="") as enemyFile:
-#         reader = csv.reader(enemyFile, delimiter=",", quotechar='"')
-#         for row in reader:
-#             enemyLst.append(row)
-#     return enemyLst
-
-
-# def resetEnemyCSV(enemy):
-#     enemyLst = []
-#     with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
-#         writer = csv.writer(enemyFile)
-#         writer.writerows([])
-#     with open("Python-test\enemy_reset.csv", newline="") as resetFile:
-#         reader = csv.reader(resetFile, delimiter=",", quotechar='"')
-#         for row in reader:
-#             enemyLst.append(row)
-#     print(enemy)
-#     with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
-#         writer = csv.writer(enemyFile)
-#         writer.writerows(enemyLst)
-
-
-# def updateEnemyCsv(enemyLst):
-#     with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
-#         writer = csv.writer(enemyFile)
-#         writer.writerows([])
-#     with open("enemy.csv", "w", newline="") as enemyFile:
-#         writer = csv.writer(enemyFile)
-#         writer.writerows(enemyLst)
-
-
-# def download():
-#     csvLst = SHEET.get_all_values()
-#     enemyLst = readEnemyCSV()[1:]
-#     for row in enemyLst:
-#         csvLst.append(row)
-#     if len(csvLst) < 21:
-#         with open("Python-test\enemy.csv", "w", newline="") as enemyFile:
-#             writer = csv.writer(enemyFile)
-#             writer.writerows(csvLst)
-#     else:
-#         print("list of opponents already updated")
-#         leave()
 
 
 def menu(player, enemyLst):
@@ -136,9 +99,7 @@ def menu(player, enemyLst):
             print("New Opponents Successfully Downloaded")
 
         elif selection == "6":
-            # resetEnemyCSV()
-            readEnemyCSV()
-            print
+            enemyLst = readEnemyCSV()
         elif selection == "7":
             print("Goodbye!")
             break
@@ -147,7 +108,6 @@ def menu(player, enemyLst):
 
 
 def opponentsLst(player, enemyLst):
-    # enemyLst = readEnemyCSV()
     while True:
         twoColLst = []
         x = 1
@@ -170,7 +130,7 @@ def opponentsLst(player, enemyLst):
             if opponent.lower() == "m":
                 menu(player, enemyLst)
             try:
-                if int(opponent) in range(len(undefOpponentLst)):
+                if int(opponent) - 1 in range(len(undefOpponentLst)):
                     for row in undefOpponentLst:
                         x += 1
                         if int(opponent) == x:
@@ -201,8 +161,6 @@ def opponentsLst(player, enemyLst):
 
 
 def winsLst(enemyLst):
-    # csvLst = SHEET.get_all_values()
-    # enemyLst = readEnemyCSV()
     x = 1
     for row in enemyLst:
         if row[3] == 0:
@@ -236,14 +194,12 @@ def swordBattle(player, enemyLst, enemy, healthPoints, num):
                     f"The fight is over {enemy.name.upper()} is defeated. Press enter to continue the quest: "
                 )
                 time.sleep(1)
-                # enemyLst = readEnemyCSV()
                 dead = enemyLst[num]
                 dead[3] = 0
                 enemyLst.pop(num)
                 enemyLst.append(dead)
                 statsPoints = 5
                 addStatsPoints(player, statsPoints, enemyLst)
-                # updateEnemyCsv(enemyLst)
         if attack < 0:
             damage = dice(1) + enemy.strengthPoints - player.armor
             print(
@@ -402,8 +358,6 @@ def addStatsPoints(player, statsPoints, enemyLst):
 
 
 def getEnemy(enemyLst, num):
-    # enemyVals = SHEET.row_values(num)
-    # enemyVals = readEnemyCSV()[num]
     enemyVals = enemyLst[num]
     type = enemyVals[0]
     name = enemyVals[1]
@@ -434,8 +388,6 @@ def story(player, enemy):
 
 
 def main():
-    # resetEnemyCSV(readEnemyCSV())
-    # reset()
     configure()
     enemyLst = SHEET.get_all_values()[1:]
     clearScreen()
