@@ -46,10 +46,11 @@ def download(enemyLst):
         x += 1
         if row[1] in [sublist[1] for sublist in enemyLst]:
             addEnemyLst.pop(x - 1)
-    print(addEnemyLst)
-    pause = input("pause")
+    x = 0
     for row in enemyLst:
-        addEnemyLst.append(row)
+        x += 1
+        if row[1] not in [sublist[1] for sublist in addEnemyLst]:
+            addEnemyLst.append(row)
 
     enemyLst = addEnemyLst
     print(enemyLst)
@@ -118,7 +119,7 @@ def opponentsLst(player, enemyLst):
                 x += 1
 
         for first, second in zip(twoColLst[::columns], twoColLst[1::columns]):
-            print(f"{first: <10}\t\t{second: <10}")
+            print(f"{first: <13}\t\t{second: <13}")
 
         if player != "Hero has not been created":
             opponent = input("Please select an opponent or 'M' for back to menu: ")
@@ -328,7 +329,7 @@ def addStatsPoints(player, statsPoints, enemyLst):
                 statsPoints -= activateStatPoints
             else:
                 print(f"Not enough points left\nYou have {statsPoints} left")
-                addStatsPoints(player, statsPoints)
+                addStatsPoints(player, statsPoints, enemyLst)
         elif selectAttribute == "2":
             activateStatPoints = int(input(f"How many points do you wish to add: "))
             if activateStatPoints <= statsPoints:
@@ -336,7 +337,7 @@ def addStatsPoints(player, statsPoints, enemyLst):
                 statsPoints -= activateStatPoints
             else:
                 print(f"Not enough points left\nYou have {statsPoints} left")
-                addStatsPoints(player, statsPoints)
+                addStatsPoints(player, statsPoints, enemyLst)
         elif selectAttribute == "3":
             activateStatPoints = int(input(f"How many points do you wish to add: "))
             if activateStatPoints <= statsPoints:
@@ -344,7 +345,7 @@ def addStatsPoints(player, statsPoints, enemyLst):
                 statsPoints -= activateStatPoints
             else:
                 print(f"Not enough points left\nYou have {statsPoints} left")
-                addStatsPoints(player, statsPoints)
+                addStatsPoints(player, statsPoints, enemyLst)
         elif selectAttribute == "4":
             activateStatPoints = int(input(f"How many points do you wish to add: "))
             if activateStatPoints <= statsPoints:
@@ -352,7 +353,7 @@ def addStatsPoints(player, statsPoints, enemyLst):
                 statsPoints -= activateStatPoints
             else:
                 print(f"Not enough points left\nYou have {statsPoints} left")
-                addStatsPoints(player, statsPoints)
+                addStatsPoints(player, statsPoints, enemyLst)
         else:
             print(f"Choices available are 1,2,3,4\nYou entered '{selectAttribute}'")
 
@@ -374,7 +375,7 @@ def story(player, enemy):
     messages = [
         {"role": "system", "content": "You are a Storyteller"},
     ]
-    message = f"Set up with dialouge that leads to {player.name} the {player.type} and {enemy.name} the {enemy.type} drawing their weapons and comincing a swordbattle. Maximum length 70 words"
+    message = f"Set up with dialouge that leads to {player.name} the {player.type} and {enemy.name} the {enemy.type} drawing their weapons and comencing a swordbattle against eachother. Maximum length 70 words"
     if message:
         messages.append(
             {"role": "user", "content": message},
