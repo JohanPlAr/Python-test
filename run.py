@@ -190,7 +190,7 @@ def opponentsLst(player, enemyLst):
                     f"Pick a number from the list or 'M' menu.\nYou entered '{opponent}'"
                 )
 
-            #        else:
+        else:
             clearScreen()
             gameTitle()
             print(f"GAME MENU:")
