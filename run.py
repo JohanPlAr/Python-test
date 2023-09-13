@@ -1,4 +1,4 @@
-import random, pprint, os, time, gspread, csv, openai
+import random, os, time, gspread, openai
 from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 
@@ -36,6 +36,30 @@ def leave():
 def readEnemyCSV():
     enemyLst = SHEET.get_all_values()[1:]
     return enemyLst
+
+
+def dice(num):
+    result = 0
+    total = 0
+    for i in range(num):
+        result = random.randint(1, 6)
+        total += result
+    return total
+
+
+def battleDice(num, total):
+    result = 0
+    sixes = []
+    for i in range(num):
+        result = random.randint(1, 6)
+        total += result
+        if result != 6:
+            result += total
+        else:
+            sixes.append(result)
+    if len(sixes) > 0:
+        battleDice(num, total)
+    return total
 
 
 def download(enemyLst):
@@ -173,20 +197,27 @@ def winsLst(enemyLst):
 
 
 def swordBattle(player, enemyLst, enemy, healthPoints, num):
+    total = 0
     clearScreen()
     print(f"\t\t⚔⚔⚔---Battle---⚔⚔⚔")
     while True:
-        attack = (player.skillPoints + dice(6)) - (enemy.skillPoints + dice(6))
+        attack = (player.skillPoints + battleDice(6, total)) - (
+            enemy.skillPoints + battleDice(6, total)
+        )
         time.sleep(1)
         if attack == 0:
             print(f"The swords clash and no damage is dealt to either opponent")
-            time.sleep(1)
+            time.sleep(2)
         if attack > 0:
-            damage = dice(1) + player.strengthPoints - player.armor
+            damage = (player.strengthPoints + dice(1)) - round(
+                enemy.armor + dice(1) + (enemy.skillPoints / 2)
+            )
+            if damage < 1:
+                damage = 1
             print(f"{player.name} strikes {enemy.name} who looses {damage} HP")
             enemy.healthPoints -= damage
-            print(f"{enemy.name} now has {enemy.healthPoints} HP left")
-            time.sleep(1)
+            print(f"{enemy.name.upper()} now has {enemy.healthPoints.upper()} HP left")
+            time.sleep(2)
             if enemy.healthPoints < 1:
                 print(
                     f"{enemy.name.upper()} recieves a final blow. \n{player.name.upper()} lifts the sword in triumph"
@@ -199,15 +230,21 @@ def swordBattle(player, enemyLst, enemy, healthPoints, num):
                 dead[3] = 0
                 enemyLst.pop(num)
                 enemyLst.append(dead)
-                statsPoints = 5
+                statsPoints = 3
                 addStatsPoints(player, statsPoints, enemyLst)
         if attack < 0:
-            damage = dice(1) + enemy.strengthPoints - player.armor
+            damage = (enemy.strengthPoints + dice(1)) - round(
+                (player.armor + dice(1) + (player.skillPoints / 2))
+            )
+            if damage < 1:
+                damage = 1
             print(
                 f"{enemy.name.upper()} strikes {player.name.upper()} who looses {damage} HP"
             )
             player.healthPoints -= damage
-            print(f"{player.name} now has {player.healthPoints} HP left")
+            print(
+                f"{player.name.upper()} now has {player.healthPoints.upper()} HP left"
+            )
             if player.healthPoints < 1:
                 print(
                     f"{player.name.upper()} recieves a final blow. \n{enemy.name.upper()} lifts sword in triumph"
@@ -215,7 +252,7 @@ def swordBattle(player, enemyLst, enemy, healthPoints, num):
                 battlteOver = input("The fight is over. Press enter: ")
                 clearScreen()
                 print(
-                    f"\n\n\t\t⚔⚔⚔---GAME OVER---⚔⚔⚔\n\n \n\n\t\t\t☩‌☩‌☩---{player.name.upper()}‌---☩‌☩‌☩"
+                    f"\n\n\t\t⚔⚔⚔---GAME OVER---⚔⚔⚔\n\n \n\n\t\t☩‌☩‌☩‌--{player.name.upper()}‌--☩‌☩‌☩"
                 )
                 leave()
                 main()
@@ -239,15 +276,6 @@ class CharacterStats:
         return f"{self.name.upper()} THE MIGHTY {self.type.upper()}\nSTRENGTH:\t{self.strengthPoints}\nHEALTH:\t\t{self.healthPoints}\nSWORD SKILL:\t{self.skillPoints}\nARMOR:\t\t{self.armor}"
 
 
-def dice(num):
-    result = 0
-    total = 0
-    for i in range(num):
-        result = random.randint(1, 6)
-        total += result
-    return total
-
-
 def characterInput(enemyLst):
     clearScreen()
     gameTitle()
@@ -259,41 +287,41 @@ def characterInput(enemyLst):
     clearScreen()
     if typeChoice == "1" or typeChoice == "human":
         type = "human"
-        strengthPoints = 5 + dice(3)
-        healthPoints = 5 + dice(3)
-        skillPoints = 5 + dice(3)
-        armor = 5
-        statsPoints = dice(7)
+        strengthPoints = 2 + dice(1)
+        healthPoints = 3 + dice(2)
+        skillPoints = 4 + dice(1)
+        armor = 0
+        statsPoints = dice(2)
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
     elif typeChoice == "2" or typeChoice == "elf":
         type = "elf"
-        strengthPoints = 0 + dice(3)
-        healthPoints = 0 + dice(3)
-        skillPoints = 10 + dice(3)
-        armor = 5
-        statsPoints = dice(10)
+        strengthPoints = 2 + dice(1)
+        healthPoints = 2 + dice(1)
+        skillPoints = 4 + dice(1)
+        armor = 0
+        statsPoints = dice(3)
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
     elif typeChoice == "3" or typeChoice == "dwarf":
         type = "dwarf"
-        strengthPoints = 10 + dice(3)
-        healthPoints = 0 + dice(3)
-        skillPoints = 0 + dice(3)
-        armor = 15
-        statsPoints = dice(7)
+        strengthPoints = 3 + dice(2)
+        healthPoints = 3 + dice(1)
+        skillPoints = 2 + dice(1)
+        armor = dice(1)
+        statsPoints = dice(1)
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
     elif typeChoice == "4" or typeChoice == "orc":
         type = "orc"
-        strengthPoints = 10 + dice(3)
-        healthPoints = 0 + dice(3)
-        skillPoints = 0 + dice(3)
-        armor = 10
-        statsPoints = dice(7)
+        strengthPoints = 2 + dice(2)
+        healthPoints = 2 + dice(1)
+        skillPoints = dice(1)
+        armor = 3
+        statsPoints = dice(2)
         player = CharacterStats(
             type, name, strengthPoints, healthPoints, skillPoints, armor
         )
@@ -324,6 +352,7 @@ def addStatsPoints(player, statsPoints, enemyLst):
 
         if selectAttribute == "1":
             activateStatPoints = int(input(f"How many points do you wish to add: "))
+
             if activateStatPoints <= statsPoints:
                 player.strengthPoints += activateStatPoints
                 statsPoints -= activateStatPoints
