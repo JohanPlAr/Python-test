@@ -48,7 +48,8 @@ def leave():
     Asking the user to interact with enter before leaving.
     """
     leave_input = input("\nMENU press Enter: ")
-    clear_screen()
+    if leave_input is True:
+        clear_screen()
 
 
 def read_enemy_csv():
@@ -269,12 +270,12 @@ def sword_battle(player, enemy_lst, enemy, num):
             time.sleep(2)
             if enemy.health_points < 1:
                 print(
-                    f"{enemy.name.upper()} recieves a final blow. \n{player.name.upper()}\
-                    lifts the sword in triumph"
+                    f"""{enemy.name.upper()} recieves a final blow. \n{player.name.upper()}
+                     lifts the sword in triumph"""
                 )
                 battle_over = input(
-                    f"The fight is over {enemy.name.upper()} is defeated. Press enter to\
-                    continue the quest: "
+                    f"""The fight is over {enemy.name.upper()} is defeated. Press enter to
+                     continue the quest: """
                 )
                 time.sleep(1)
                 dead = enemy_lst[num]
@@ -296,8 +297,8 @@ def sword_battle(player, enemy_lst, enemy, num):
             print(f"{player.name.upper()} now has {player.health_points} HP left")
             if player.health_points < 1:
                 print(
-                    f"{player.name.upper()} recieves a final blow. \n{enemy.name.upper()}\
-                    lifts sword in triumph"
+                    f"""{player.name.upper()} recieves a final blow.\n
+                    {enemy.name.upper()} lifts sword in triumph"""
                 )
                 battle_over = input("The fight is over. Press enter: ")
                 clear_screen()
@@ -327,9 +328,11 @@ class CharacterStats:
         self.armor = armor
 
     def __str__(self):
-        return f"{self.name.upper()} THE MIGHTY {self.char_type.upper()}\nSTRENGTH:\t\
-               {self.strength_points}\nHEALTH:\t\t{self.health_points}\nSWORD SKILL:\t\
-               {self.skill_points}\nARMOR:\t\t{self.armor}"
+        return f"""{self.name.upper()} THE MIGHTY {self.char_type.upper()}\n
+        STRENGTH:\t{self.strength_points}\n
+        HEALTH:\t\t{self.health_points}\n
+        SWORD SKILL:\t{self.skill_points}\n
+        ARMOR:\t\t{self.armor}"""
 
 
 def character_input(enemy_lst):
@@ -414,14 +417,8 @@ def add_stat_points(player, stat_points, enemy_lst):
             print(player)
             leave()
             game_menu(player, enemy_lst)
-        print(f"You have {stat_points} points to add to your stats")
-        print(
-            f"What stats would you like to improve?\n\
-            1. STRENGTH:\t{getattr(player, 'strength_points')}\n\
-            2. HEALTH:\t{getattr(player, 'health_points')}\n\
-            3. SWORD SKILL:\t{getattr(player, 'skill_points')}\n\
-            4. ARMOR:\t{getattr(player, 'armor')}\n"
-        )
+        print(f"You have {stat_points} points to add to your abilities")
+        print(player)
         if stat_points > 0:
             select_attribute = input("Choose attribute: ")
 
@@ -488,10 +485,9 @@ def story(player, enemy):
     messages = [
         {"role": "system", "content": "You are a Storyteller"},
     ]
-    message = f"Set up with dialouge that leads to {player.name} the\
-              {player.char_type} and {enemy.name} the {enemy.char_type}\
-              drawing their weapons and comencing a sword_battle against\
-              eachother. Maximum length 70 words"
+    message = f"""Set up with dialouge that leads to {player.name} the {player.char_type}
+               and {enemy.name} the {enemy.char_type} drawing their weapons and comencing
+               a sword_battle against eachother. Maximum length 70 words"""
     if message:
         messages.append(
             {"role": "user", "content": message},
@@ -513,8 +509,8 @@ def main():
     clear_screen()
     game_title()
     print(
-        "A RPG-adventure game powered by the story-telling of chat-gpt\
-        \n\t\t      Now enter the realm"
+        """A RPG-adventure game powered by the story-telling of chat-gpt
+        \n\t\t      Now enter the realm"""
     )
     leave()
     clear_screen()
