@@ -21,43 +21,43 @@ def configure():
 
 
 def clearScreen():
-    ###
+    """
     Clears the screen, cover the commands for Windows "nt" with "cls" and clear for else
-    ###
+    """
     os.system("cls" if os.name == "nt" else "clear")
 
 
 def gameTitle():
-    ###
+    """
     Prints the game title
-    ###
+    """
     print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
 
 
 def leave():
-    ###
-    Input used to pause program before user is leaving function. 
+    """
+    Input used to pause program before user is leaving function.
     Asking the user to interact with enter before leaving.
-    ###
+    """
     leave = input(f"\nMENU press Enter: ")
     clearScreen()
 
 
 def readEnemyCSV():
-    ###
+    """
     Reads the google sheet file and storing it in the variable enemyLst.
     enemyLst variable is passed along during the game and only reset to restart
     the settings
-    ###
+    """
     enemyLst = SHEET.get_all_values()[1:]
     return enemyLst
 
 
 def dice(num):
-    ###
-    Simulates a six sided dice roll. The num parameter describes number of rolls 
+    """
+    Simulates a six sided dice roll. The num parameter describes number of rolls
     being called
-    ###
+    """
     result = 0
     total = 0
     for i in range(num):
@@ -67,11 +67,11 @@ def dice(num):
 
 
 def battleDice(num, total):
-    ###
+    """
     Simulates a six sided dice with the addition that all sixes generates two new
-    rolls of dice. This function is only used in the swordBattle function to 
-    increase serendipity and allow higher uncertanty in the battles.  
-    ###
+    rolls of dice. This function is only used in the swordBattle function to
+    increase serendipity and allow higher uncertanty in the battles.
+    """
     result = 0
     sixes = []
     for i in range(num):
@@ -87,12 +87,11 @@ def battleDice(num, total):
 
 
 def download(enemyLst):
-    ###
-    Updates the enemyLst with new enemies.
-    The addEnemyLst list is crosschecked against enemyLst and duplicates are removed.
-    The enemyLst is added to the bottom of addEnemyLst and then redefined to equal
-    the updated addEnemyLst before returned.  
-    ###
+    """
+    Updates the enemyLst with new enemies. The addEnemyLst list is crosschecked against enemyLst
+    and duplicates are removed. The enemyLst is added to the bottom of addEnemyLst and then
+    redefined to equal the updated addEnemyLst before returned.
+    """
     addEnemyLst = MOREENEMIES.get_all_values()[1:]
 
     x = 0
@@ -112,9 +111,9 @@ def download(enemyLst):
 
 
 def menu(player, enemyLst):
-    ###
+    """
     Holds the Game Menu which allows user to choose activities
-    ###
+    """
     menu = {}
     menu["1."] = "Create New Hero"
     menu["2."] = "View Stats"
@@ -166,10 +165,10 @@ def menu(player, enemyLst):
 
 
 def opponentsLst(player, enemyLst):
-    ###
+    """
     Displays the undefeated enemies available for battle. zip is used to display the list
     in two columns.
-    ###
+    """
     while True:
         twoColLst = []
         x = 1
@@ -223,9 +222,9 @@ def opponentsLst(player, enemyLst):
 
 
 def winsLst(enemyLst):
-    ###
+    """
     Displays a list of the defeated enemies. Checks for healthPoints 0
-    ###
+    """
     x = 1
     for row in enemyLst:
         if row[3] == 0:
@@ -237,9 +236,9 @@ def winsLst(enemyLst):
 
 
 def swordBattle(player, enemyLst, enemy, healthPoints, num):
-    ###
+    """
     handles the battle logic between player and selected opponent.
-    ###
+    """
     total = 0
     clearScreen()
     print(f"\t\t⚔⚔⚔---Battle---⚔⚔⚔")
@@ -304,7 +303,7 @@ def swordBattle(player, enemyLst, enemy, healthPoints, num):
 
 class CharacterStats:
     """
-    Object collects the character and selected enemy stats. __str__ used to make 
+    Object collects the character and selected enemy stats. __str__ used to make
     the print of the object prettier.
     """
 
@@ -321,10 +320,10 @@ class CharacterStats:
 
 
 def characterInput(enemyLst):
-    ###
-    Handles the user input to create the player character. Gives unique
+    """
+    Handles the user input to create the player character. Automates unique
     stats for the types human/elf/dwarf/orc.
-    ###
+    """
     clearScreen()
     gameTitle()
     print(f"HERO")
@@ -381,10 +380,10 @@ def characterInput(enemyLst):
 
 
 def addStatsPoints(player, statsPoints, enemyLst):
-    ###
+    """
     The final stage of the character creation which let's the user place statspoints
     of their choice.
-    ###
+    """
     while True:
         clearScreen()
         gameTitle()
@@ -440,9 +439,9 @@ def addStatsPoints(player, statsPoints, enemyLst):
 
 
 def getEnemy(enemyLst, num):
-    ###
+    """
     Creates an "enemy"-instance from CharacterStats object
-    ###
+    """
     enemyVals = enemyLst[num]
     type = enemyVals[0]
     name = enemyVals[1]
@@ -455,10 +454,10 @@ def getEnemy(enemyLst, num):
 
 
 def story(player, enemy):
-    ###
-    Makes an api call to chat-gpt asking it to reply to a string prepared with type and name. 
-    Length of the reply is included in the string 
-    ###
+    """
+    Api call to chat-gpt asking it to reply to a string prepared with type and name.
+    Length limit of the reply is included in the string
+    """
     clearScreen()
     messages = [
         {"role": "system", "content": "You are a Storyteller"},
@@ -477,9 +476,9 @@ def story(player, enemy):
 
 
 def main():
-    ###
+    """
     Controls calls for the api and game functions. Prints the "title-page"
-    ###
+    """
     configure()
     enemyLst = SHEET.get_all_values()[1:]
     clearScreen()
