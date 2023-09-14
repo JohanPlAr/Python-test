@@ -143,14 +143,15 @@ def menu(player, enemy_lst):
             clear_screen()
             game_title()
             player, enemy_lst, num = opponents_lst(player, enemy_lst)
-            enemy, health_points, num = getEnemy(enemy_lst, num)
+
+            enemy, health_points, num = get_enemy(enemy_lst, num)
             story(player, enemy)
             sword_battle(player, enemy_lst, enemy, health_points, num)
         elif selection == "4":
             clear_screen()
             game_title()
             print("")
-            winsLst(enemy_lst)
+            wins_lst(enemy_lst)
         elif selection == "5":
             enemy_lst = download(enemy_lst)
             print("New Opponents Successfully Downloaded")
@@ -221,7 +222,7 @@ def opponents_lst(player, enemy_lst):
             break
 
 
-def winsLst(enemy_lst):
+def wins_lst(enemy_lst):
     """
     Displays a list of the defeated enemies. Checks for health_points 0
     """
@@ -241,14 +242,14 @@ def sword_battle(player, enemy_lst, enemy, health_points, num):
     """
     total = 0
     clear_screen()
-    print(f"\t\t⚔⚔⚔---Battle---⚔⚔⚔")
+    print("\t\t⚔⚔⚔---Battle---⚔⚔⚔")
     while True:
         attack = (player.skill_points + battle_dice(6, total)) - (
             enemy.skill_points + battle_dice(6, total)
         )
         time.sleep(1)
         if attack == 0:
-            print(f"The swords clash and no damage is dealt to either opponent")
+            print("The swords clash and no damage is dealt to either opponent")
             time.sleep(2)
         if attack > 0:
             damage = (player.strength_points + dice(1)) - round(
@@ -327,51 +328,58 @@ def character_input(enemy_lst):
     print(f"HERO")
     name = input("NAME: ")
     time.sleep(1)
-    type_choice = input("1. Human\n2. Elf\n3. Dwarf\n4. Orc\n\nTYPE: ").lower()
-    time.sleep(1)
-    clear_screen()
-    if type_choice == "1" or type_choice == "human":
-        type = "human"
-        strength_points = 2 + dice(1)
-        health_points = 3 + dice(2)
-        skill_points = 4 + dice(1)
-        armor = 0
-        stat_points = dice(2)
-        player = CharacterStats(
-            type, name, strength_points, health_points, skill_points, armor
-        )
-    elif type_choice == "2" or type_choice == "elf":
-        type = "elf"
-        strength_points = 2 + dice(1)
-        health_points = 2 + dice(1)
-        skill_points = 4 + dice(1)
-        armor = 0
-        stat_points = dice(3)
-        player = CharacterStats(
-            type, name, strength_points, health_points, skill_points, armor
-        )
-    elif type_choice == "3" or type_choice == "dwarf":
-        type = "dwarf"
-        strength_points = 3 + dice(2)
-        health_points = 3 + dice(1)
-        skill_points = 2 + dice(1)
-        armor = dice(1)
-        stat_points = dice(1)
-        player = CharacterStats(
-            type, name, strength_points, health_points, skill_points, armor
-        )
-    elif type_choice == "4" or type_choice == "orc":
-        type = "orc"
-        strength_points = 2 + dice(2)
-        health_points = 2 + dice(1)
-        skill_points = dice(1)
-        armor = 3
-        stat_points = dice(2)
-        player = CharacterStats(
-            type, name, strength_points, health_points, skill_points, armor
-        )
-    else:
-        print(f"Choices available are Human/Elf/Dwarf/Orc\nYou entered '{name}'")
+    while True:
+        type_choice = input("1. Human\n2. Elf\n3. Dwarf\n4. Orc\n\nTYPE: ").lower()
+        time.sleep(1)
+        clear_screen()
+        if type_choice == "1" or type_choice == "human":
+            type = "human"
+            strength_points = 2 + dice(1)
+            health_points = 3 + dice(2)
+            skill_points = 4 + dice(1)
+            armor = 0
+            stat_points = dice(2)
+            player = CharacterStats(
+                type, name, strength_points, health_points, skill_points, armor
+            )
+            break
+        elif type_choice == "2" or type_choice == "elf":
+            type = "elf"
+            strength_points = 2 + dice(1)
+            health_points = 2 + dice(1)
+            skill_points = 4 + dice(1)
+            armor = 0
+            stat_points = dice(3)
+            player = CharacterStats(
+                type, name, strength_points, health_points, skill_points, armor
+            )
+            break
+        elif type_choice == "3" or type_choice == "dwarf":
+            type = "dwarf"
+            strength_points = 3 + dice(2)
+            health_points = 3 + dice(1)
+            skill_points = 2 + dice(1)
+            armor = dice(1)
+            stat_points = dice(1)
+            player = CharacterStats(
+                type, name, strength_points, health_points, skill_points, armor
+            )
+            break
+        elif type_choice == "4" or type_choice == "orc":
+            type = "orc"
+            strength_points = 2 + dice(2)
+            health_points = 2 + dice(1)
+            skill_points = dice(1)
+            armor = 3
+            stat_points = dice(2)
+            player = CharacterStats(
+                type, name, strength_points, health_points, skill_points, armor
+            )
+            break
+        else:
+            print(
+                f"Choices available are Human/Elf/Dwarf/Orc\nYou entered '{type_choice}'"
+            )
 
     add_stat_points(player, stat_points, enemy_lst)
     return player
@@ -436,7 +444,7 @@ def add_stat_points(player, stat_points, enemy_lst):
             print(f"Choices available are 1,2,3,4\nYou entered '{selectAttribute}'")
 
 
-def getEnemy(enemy_lst, num):
+def get_enemy(enemy_lst, num):
     """
     Creates an "enemy"-instance from CharacterStats object
     """
@@ -472,7 +480,7 @@ def story(player, enemy):
     reply = chat.choices[0].message.content
     print(f"\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔\n\n{reply}")
     messages.append({"role": "assistant", "content": reply})
-    startBattle = input(f"\nPress Enter to start the battle")
+    start_battle = input(f"\nPress Enter to start the battle")
 
 
 def main():

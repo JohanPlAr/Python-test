@@ -90,6 +90,10 @@ The site can be accessed by this [link](https://heroku/xxxxx)
 
 - The class also has methods as **str** to print the character stats in a viewable fashion
 
+## Flow Chart
+
+![Flow Chart](documentation/flow-chart.png)
+
 ## Testing
 
 - I have manually tested the project by doing the following:
