@@ -35,11 +35,28 @@ def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
 
+def text_center(text):
+    """
+    Placing text in center of 62 Character line
+    """
+    txt = f"{text}"
+    center_txt = txt.center(62)
+    print(center_txt)
+
+
+def input_center(text):
+    """
+    Placing input label in center of 62 Characters line
+    """
+    txt = f"{text}"
+    center_input = input(txt.rjust(62 // 2))
+
+
 def game_title():
     """
     Prints the game title
     """
-    print("\t\t⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
+    text_center("⚔⚔⚔---LORD OF THE STRINGS---⚔⚔⚔")
 
 
 def leave():
@@ -47,7 +64,7 @@ def leave():
     Input used to pause program before user is leaving function.
     Asking the user to interact with enter before leaving.
     """
-    leave_input = input("\nMENU press Enter: ")
+    leave_input = input("MENU press Enter: ".rjust(80 // 2))
     if leave_input is True:
         clear_screen()
 
@@ -124,23 +141,23 @@ def game_menu(player, enemy_lst):
     Holds the Game Menu which allows user to choose activities
     """
     menu = {}
-    menu["1."] = "Create New Hero"
-    menu["2."] = "View Stats"
-    menu["3."] = "Choose Opponent"
-    menu["4."] = "View Wins"
-    menu["5."] = "Download New Opponents"
-    menu["6."] = "Reset Opponents To Start Settings"
-    menu["7."] = "Quit Game"
+    menu["\t\t\t1."] = "Create New Hero"
+    menu["\t\t\t2."] = "View Stats"
+    menu["\t\t\t3."] = "Choose Opponent"
+    menu["\t\t\t4."] = "View Wins"
+    menu["\t\t\t5."] = "Download New Opponents"
+    menu["\t\t\t6."] = "Reset Opponents To Start Settings"
+    menu["\t\t\t7."] = "Quit Game"
 
     while True:
         clear_screen()
         game_title()
-        print("GAME MENU:")
+        print("\t\t\tGAME MENU:")
         options = menu.keys()
         options = sorted(options)
         for entry in options:
             print(entry, menu[entry])
-        selection = input("Please select an option: ")
+        selection = input("\t\t\tPlease select an option: ")
         if selection == "1":
             character_input(enemy_lst)
         elif selection == "2":
@@ -508,10 +525,8 @@ def main():
     enemy_lst = SHEET.get_all_values()[1:]
     clear_screen()
     game_title()
-    print(
-        """A RPG-adventure game powered by the story-telling of chat-gpt
-        \n\t\t      Now enter the realm"""
-    )
+    text_center("A RPG-adventure game powered by the story-telling of chat-gpt")
+    text_center("Now enter the realm")
     leave()
     clear_screen()
     player = "Hero has not been created"

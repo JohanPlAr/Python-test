@@ -1,0 +1,10 @@
+type,name,strengthPoints,healthPoints,skillPoints,armor
+elf,Elrond,24,35,35,7
+human,Strider,27,30,38,7
+orc,Ugluk,33,35,33,13
+dwarf,Gimli,34,29,35,19
+elf,Galadriel,25,27,35,6
+human,Eowyn,28,31,35,12
+orc,Azog,35,43,25,16
+dwarf,Dain,35,35,25,23
+elf,Legolas,30,30,38,7
